@@ -1,9 +1,9 @@
-from multiprocessing import Process, Request
+from multiprocessing import Process
 
 import pytest
 import requests
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 import vertica_python as vp
 
 app = FastAPI
@@ -45,4 +45,3 @@ def test_read_main(server):
     print(connection.cursor().execute('select 1').fetchall())
     assert response.status_code == 200
     assert response.json() == {"msg": "Hello World"}
-    
