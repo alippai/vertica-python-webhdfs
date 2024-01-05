@@ -8,7 +8,7 @@ The python scripts starts a fake webhdfs server, receives the resultset as parqu
 |                |                      |           |                   |            | 
 +------+---------+                      +----+------+                   +----+-------+ 
        |                                     |                               |        
-       |--- Run EXPORT TO VERTICA Query ---->|                               |
+       |---- Run EXPORT TO PARQET Query ---->|                               |
        |                                     |--- Sends the execution jobs ->|         
        |                                     |                               |
        |<--------- Vertica data nodes connect -------------------------------|        
@@ -20,5 +20,5 @@ The python scripts starts a fake webhdfs server, receives the resultset as parqu
        |<--------- Parquet --------------------------------------------------|
        |                                     |
        |                                     |
-       |<---- EXPORT TO VERTICA returns -----|
+       |<----- EXPORT TO PARQET returns -----|
 ```
