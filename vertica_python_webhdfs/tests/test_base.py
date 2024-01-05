@@ -14,7 +14,7 @@ app = FastAPI()
 @app.get("/{full_path:path}")
 def all_get(request: Request, full_path: str):
     print(f"full path {full_path}")
-    print(f"query param {request.query_param}")
+    print(f"query param {request.query_params}")
     JSONResponse(
         status_code=404,
         content={
@@ -30,10 +30,10 @@ def all_get(request: Request, full_path: str):
 @app.put("/{full_path:path}")
 async def all_put(request: Request, full_path: str):
     print(f"full path {full_path}")
-    print(f"query param {request.query_param}")
-    if request.query_param["op"] == "MKDIRS":
+    print(f"query param {request.query_params}")
+    if request.query_params["op"] == "MKDIRS":
         return {"boolean": True}
-    if request.query_param["op"] == "CREATE":
+    if request.query_params["op"] == "CREATE":
         await request.body()
         return Response(status_code=201)
 
@@ -41,7 +41,7 @@ async def all_put(request: Request, full_path: str):
 @app.delete("/{full_path:path}")
 def all_delete(request: Request, full_path: str):
     print(f"full path {full_path}")
-    print(f"query param {request.query_param}")
+    print(f"query param {request.query_params}")
     return {"boolean": True}
 
 
