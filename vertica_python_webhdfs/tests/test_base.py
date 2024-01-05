@@ -4,6 +4,7 @@ import pytest
 import requests
 import uvicorn
 from fastapi import FastAPI
+import vertica_python as vp
 
 app = FastAPI
 
@@ -36,5 +37,12 @@ def server():
 
 def test_read_main(server):
     response = requests.get("http://localhost:8000/")
+    connection = vp.connect(**{'host': '127.0.0.1',
+             'port': 5433,
+             'user': 'dbadmin',
+             'database': 'VMart'
+             })
+    print(connection.cursor().execute('select 1').fetchall())
     assert response.status_code == 200
     assert response.json() == {"msg": "Hello World"}
+    
