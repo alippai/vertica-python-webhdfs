@@ -21,6 +21,7 @@ jobs:
       - name: Set up a Vertica server docker container
         timeout-minutes: 15
         run: |
+          docker network create -d bridge my-network
           docker run -d -p 5433:5433 -p 5444:5444 \
             --name vertica_docker --network my-network \
             vertica/vertica-ce:23.4.0-0
