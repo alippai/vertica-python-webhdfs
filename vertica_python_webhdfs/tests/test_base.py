@@ -62,4 +62,4 @@ def test_read_main(server):
              'database': 'VMart'
              })
     print(connection.cursor().execute('select 1').fetchall())
-    print(connection.cursor().execute("EXPORT TO PARQUET(directory = 'webhdfs://127.0.0.1:8000/virtualdata') SELECT 1 AS account_id").fetchall())
+    print(connection.cursor().execute("EXPORT TO PARQUET(directory = 'webhdfs://127.0.0.1:8000/virtualdata') AS SELECT 1 AS account_id").fetchall())
