@@ -15,7 +15,7 @@ app = FastAPI()
 def all_get(request: Request, full_path: str):
     print(f"full path {full_path}")
     print(f"query param {request.query_params}")
-    JSONResponse(
+    return JSONResponse(
         status_code=404,
         content={
             "RemoteException": {
