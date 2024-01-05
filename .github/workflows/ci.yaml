@@ -38,7 +38,4 @@ jobs:
         run: pip install tox
       - name: Run tests
         run: |
-          export VP_TEST_USER=dbadmin
-          export VP_TEST_OAUTH_ACCESS_TOKEN=`cat access_token.txt`
-          export VP_TEST_OAUTH_USER=oauth_user
           tox -e py
