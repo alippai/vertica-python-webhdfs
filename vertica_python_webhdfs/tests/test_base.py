@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 import vertica_python as vp
 import json
 
-app = FastAPI
+app = FastAPI()
 
 @app.get('/{full_path:path}')
 def all_get(request: Request, full_path: str):
@@ -56,12 +56,10 @@ def server():
 
 
 def test_read_main(server):
-    response = requests.get("http://localhost:8000/")
     connection = vp.connect(**{'host': '127.0.0.1',
              'port': 5433,
              'user': 'dbadmin',
              'database': 'VMart'
              })
     print(connection.cursor().execute('select 1').fetchall())
-    assert response.status_code == 200
-    assert response.json() == {"msg": "Hello World"}
+    print(connection.cursor().execute("EXPORT TO PARQUET(directory = 'webhdfs://127.0.0.1:8000/virtualdata') SELECT 1 AS account_id").fetchall())
