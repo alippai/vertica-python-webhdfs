@@ -51,8 +51,8 @@ async def put_handler(request: Request, full_path: str) -> Response:
         if "create_redirected" not in request.query_params:
             return Response(status_code=307, headers={"location": f"http://{request.base_url.hostname}:{request.base_url.port}/{full_path}?{request.query_params}&create_redirected=true"})
         else:
-            # consume the body and asserts it's empty
-            assert await request.body() == 0
+            # consume the body and assert it's empty
+            assert len(await request.body()) == 0
             files[full_path] = 0
             return Response(status_code=201, headers={"location": f"hdfs://{request.base_url.hostname}:{request.base_url.port}/{full_path}"})
     if request.query_params["op"] == "RENAME":
