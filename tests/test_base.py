@@ -2,6 +2,9 @@ import contextlib
 import time
 import threading
 import uvicorn
+
+import vertica_python as vp
+
 from global_state import finish
 
 class Server(uvicorn.Server):

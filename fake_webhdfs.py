@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request, Response
 from io import BytesIO
+
+from fastapi import FastAPI, Request, Response
 import pyarrow.parquet as pq
 
 from global_state import files, results
