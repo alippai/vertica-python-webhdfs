@@ -49,12 +49,12 @@ async def put_handler(request: Request, full_path: str) -> Response:
         return Response('{"boolean": true}', 200, media_type='application/json')
     if request.query_params["op"] == "CREATE":
         if "create_redirected" not in request.query_params:
-            return Response(status_code=307, headers={"location": f"http://{request.base_url.host}:{request.base_url.port}/{full_path}?{request.query_params}&create_redirected=true"})
+            return Response(status_code=307, headers={"location": f"http://{request.base_url.hostname}:{request.base_url.port}/{full_path}?{request.query_params}&create_redirected=true"})
         else:
             # consume the body and asserts it's empty
             assert await request.body() == 0
             files[full_path] = 0
-            return Response(status_code=201, headers={"location": f"hdfs://{request.base_url.host}:{request.base_url.port}/{full_path}"})
+            return Response(status_code=201, headers={"location": f"hdfs://{request.base_url.hostname}:{request.base_url.port}/{full_path}"})
     if request.query_params["op"] == "RENAME":
         return Response('{"boolean": true}', 200, media_type='application/json')
 
@@ -73,7 +73,7 @@ async def post_handler(request: Request, full_path: str) -> Response:
         return Response('{"boolean": true}', 200, media_type='application/json')
     if request.query_params["op"] == "APPEND":
         if "append_redirected" not in request.query_params:
-            return Response(status_code=307, headers={"location": f"http://{request.base_url.host}:{request.base_url.port}/{full_path}?{request.query_params}&append_redirected=true"})
+            return Response(status_code=307, headers={"location": f"http://{request.base_url.hostname}:{request.base_url.port}/{full_path}?{request.query_params}&append_redirected=true"})
         else:
             ret = await request.body()
             b = BytesIO(ret)
