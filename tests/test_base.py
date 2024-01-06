@@ -23,7 +23,7 @@ class Server(uvicorn.Server):
 config = uvicorn.Config("fake_webhdfs:app", host="127.0.0.1", port=8000, log_level="info")
 server = Server(config=config)
 
-def test_read_main(server):
+def test_read_main():
     connection = vp.connect(
         **{"host": "127.0.0.1", "port": 5433, "user": "dbadmin", "database": "VMart"}
     )
