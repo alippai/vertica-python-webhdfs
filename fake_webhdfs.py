@@ -1,7 +1,6 @@
 from io import BytesIO
 
 from fastapi import FastAPI, Request, Response
-import pyarrow.parquet as pq
 
 from global_state import files, results
 
@@ -78,5 +77,5 @@ async def post_handler(request: Request, full_path: str) -> Response:
             ret = await request.body()
             b = BytesIO(ret)
             files[full_path] += len(ret)
-            results.append(pq.read_table(b))
+            results.append(b)
             return Response(status_code=200)
