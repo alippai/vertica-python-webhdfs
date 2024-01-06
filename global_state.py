@@ -5,7 +5,12 @@ files = {}
 results = []
 
 def finish():
-    files = {}
+    global files
+    global results
+
     t = pa.concat_tables(results)
+
+    files = {}
     results = []
+    
     return t
