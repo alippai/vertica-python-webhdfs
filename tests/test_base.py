@@ -14,9 +14,11 @@ class Server(uvicorn.Server):
     @contextlib.contextmanager
     def run_in_thread(self):
         thread = threading.Thread(target=self.run)
+        print('Starting')
         thread.start()
         try:
             while not self.started:
+                print('Not started')
                 time.sleep(1e-3)
             yield
         finally:

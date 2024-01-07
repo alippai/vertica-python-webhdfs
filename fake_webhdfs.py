@@ -81,9 +81,11 @@ async def post_handler(request: Request) -> Response:
             results.append(b)
             return Response()
 
+print('App init')
 app = Starlette(debug=True, routes=[
     Route("/{full_path:path}", get_handler, methods=["GET"]),
     Route("/{full_path:path}", put_handler, methods=["PUT"]),
     Route("/{full_path:path}", delete_handler, methods=["DELETE"]),
     Route("/{full_path:path}", post_handler, methods=["POST"]),
 ])
+print('App initialized')
