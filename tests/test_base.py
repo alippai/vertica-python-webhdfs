@@ -23,7 +23,7 @@ class Server(uvicorn.Server):
             self.should_exit = True
             thread.join()
 
-config = uvicorn.Config("fake_webhdfs:app", host="127.0.0.1", port=8000, log_level="info")
+config = uvicorn.Config("fake_webhdfs:app", host="127.0.0.1", port=8000, log_level="trace")
 server = Server(config=config)
 
 def test_read_main():
