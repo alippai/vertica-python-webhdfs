@@ -16,12 +16,14 @@ class Server(uvicorn.Server):
         thread = threading.Thread(target=self.run)
         print('Starting')
         thread.start()
+        print('Thread started')
         try:
             while not self.started:
-                print('Not started')
-                time.sleep(1e-3)
+                print(f'Not started: {self.started}')
+                time.sleep(1)
             yield
         finally:
+            print('Exiting')
             self.should_exit = True
             thread.join()
 
