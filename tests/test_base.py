@@ -7,8 +7,6 @@ import vertica_python as vp
 
 from global_state import finish
 
-i = 0
-
 class Server(uvicorn.Server):
     def install_signal_handlers(self):
         pass
@@ -21,6 +19,7 @@ class Server(uvicorn.Server):
         thread.start()
         print('Thread started')
         try:
+            i = 0
             while not self.started:
                 print(f'Not started: {self.started}')
                 time.sleep(1)
