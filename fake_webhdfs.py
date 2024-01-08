@@ -1,52 +1,46 @@
 from io import BytesIO
+from typing import Any
 
-from fastapi import FastAPI, Request, Response
+from starlette.applications import Starlette
+from starlette.responses import JSONResponse, Response
+from starlette.routing import Route
+from starlette.requests import Request
 
 from global_state import files, results
 
-GENERIC_NOT_FOUND = f"""{{
-    "RemoteException": {{
+GENERIC_NOT_FOUND = {
+    "RemoteException": {
         "exception": "FileNotFoundException",
         "javaClassName": "java.io.FileNotFoundException",
-        "message": "File does not exist: /foo/a.patch"
-    }}
-}}"""
+        "message": "File does not exist: /foo/a.patch",
+    }
+}
 
-def generic_file(size: int) -> str:
-    return f'''{{
-    "FileStatus": {{
-        "accessTime"      : 0,
-        "blockSize"       : 0,
-        "group"           : "",
-        "length"          : {size},
-        "modificationTime": 0,
-        "owner"           : "",
-        "pathSuffix"      : "",
-        "permission"      : "666",
-        "replication"     : 1,
-        "type"            : "FILE"
-    }}
-}}'''
+def generic_file(size: int) -> dict[str, dict[str, Any]]:
+    return {
+        "FileStatus": {
+            "accessTime"      : 0,
+            "blockSize"       : 0,
+            "group"           : "",
+            "length"          : size,
+            "modificationTime": 0,
+            "owner"           : "",
+            "pathSuffix"      : "",
+            "permission"      : "666",
+            "replication"     : 1,
+            "type"            : "FILE",
+        }
+    }
 
-app = FastAPI()
-
-@app.get("/{full_path:path}")
-async def get_handler(request: Request, full_path: str) -> Response:
-    print(f"full path {full_path}")
-    print(f"query param {request.query_params}")
-    if request.query_params['op'] == "GETFILESTATUS":
+async def handler(request: Request) -> Response:
+    full_path = request.url.path[1:]
+    operation = request.query_params['op']
+    if operation == "GETFILESTATUS":
         if full_path in files:
-            return Response(generic_file(files[full_path]), 200, media_type='application/json')
+            return JSONResponse(generic_file(files[full_path]))
         else:
-            return Response(GENERIC_NOT_FOUND, 404, media_type='application/json')
-
-@app.put("/{full_path:path}")
-async def put_handler(request: Request, full_path: str) -> Response:
-    print(f"full path {full_path}")
-    print(f"query param {request.query_params}")
-    if request.query_params['op'] == "MKDIRS":
-        return Response('{"boolean": true}', 200, media_type='application/json')
-    if request.query_params["op"] == "CREATE":
+            return JSONResponse(GENERIC_NOT_FOUND, 404)
+    if operation == "CREATE":
         if "create_redirected" not in request.query_params:
             return Response(status_code=307, headers={"location": f"http://{request.base_url.hostname}:{request.base_url.port}/{full_path}?{request.query_params}&create_redirected=true"})
         else:
@@ -54,23 +48,9 @@ async def put_handler(request: Request, full_path: str) -> Response:
             assert len(await request.body()) == 0
             files[full_path] = 0
             return Response(status_code=201, headers={"location": f"hdfs://{request.base_url.hostname}:{request.base_url.port}/{full_path}"})
-    if request.query_params["op"] == "RENAME":
-        return Response('{"boolean": true}', 200, media_type='application/json')
-
-@app.delete("/{full_path:path}")
-async def delete_handler(request: Request, full_path: str) -> Response:
-    print(f"full path {full_path}")
-    print(f"query param {request.query_params}")
-    if request.query_params["op"] == "DELETE":
-        return Response('{"boolean": true}', 200, media_type='application/json')
-    
-@app.post("/{full_path:path}")
-async def post_handler(request: Request, full_path: str) -> Response:
-    print(f"full path {full_path}")
-    print(f"query param {request.query_params}")
-    if request.query_params["op"] == "TRUNCATE":
-        return Response('{"boolean": true}', 200, media_type='application/json')
-    if request.query_params["op"] == "APPEND":
+    if operation in {"RENAME","DELETE", "TRUNCATE", "MKDIRS"}:
+        return JSONResponse({"boolean": True})
+    if operation == "APPEND":
         if "append_redirected" not in request.query_params:
             return Response(status_code=307, headers={"location": f"http://{request.base_url.hostname}:{request.base_url.port}/{full_path}?{request.query_params}&append_redirected=true"})
         else:
@@ -78,4 +58,6 @@ async def post_handler(request: Request, full_path: str) -> Response:
             b = BytesIO(ret)
             files[full_path] += len(ret)
             results.append(b)
-            return Response(status_code=200)
+            return Response()
+    raise Exception(f"Unhandled operation {operation} at path {full_path} and method {request.method}")
+app = Starlette(debug=True, routes=[Route("/{full_path:path}", handler, methods=["GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"])])

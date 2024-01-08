@@ -3,6 +3,7 @@ import time
 import threading
 import uvicorn
 
+import pyarrow as pa
 import vertica_python as vp
 
 from global_state import finish
@@ -17,13 +18,13 @@ class Server(uvicorn.Server):
         thread.start()
         try:
             while not self.started:
-                time.sleep(1e-3)
+                time.sleep(0.01)
             yield
         finally:
             self.should_exit = True
             thread.join()
 
-config = uvicorn.Config("fake_webhdfs:app", host="127.0.0.1", port=8000, log_level="info")
+config = uvicorn.Config("fake_webhdfs:app", host="127.0.0.1", port=8000, log_level="trace")
 server = Server(config=config)
 
 def test_read_main():
@@ -39,3 +40,4 @@ def test_read_main():
     # a single pyarrow table
     t = finish()
     print(t)
+    assert t.equals(pa.Table.from_arrays([pa.array([1])], names=['account_id']))
