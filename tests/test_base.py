@@ -13,23 +13,13 @@ class Server(uvicorn.Server):
 
     @contextlib.contextmanager
     def run_in_thread(self):
-        print('run_in_thread')
         thread = threading.Thread(target=self.run)
-        print('Starting')
         thread.start()
-        print('Thread started')
         try:
-            i = 0
             while not self.started:
-                print(f'Not started: {self.started}')
-                time.sleep(1)
-                if i > 30:
-                    raise Exception('Server start failed')
-                else:
-                    i += 1
+                time.sleep(0.01)
             yield
         finally:
-            print('Exiting')
             self.should_exit = True
             thread.join()
 
