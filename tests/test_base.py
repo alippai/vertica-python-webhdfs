@@ -23,11 +23,8 @@ class Server(uvicorn.Server):
             self.should_exit = True
             thread.join()
 
-print('Before config')
 config = uvicorn.Config("fake_webhdfs:app", host="127.0.0.1", port=8000, log_level="trace")
-print('Before server')
 server = Server(config=config)
-print('After server')
 
 def test_read_main():
     connection = vp.connect(
@@ -42,3 +39,4 @@ def test_read_main():
     # a single pyarrow table
     t = finish()
     print(t)
+    assert t.equals(pa.Table.from_arrays([pa.array([1])], names=['account_id']))
