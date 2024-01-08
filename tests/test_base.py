@@ -3,6 +3,7 @@ import time
 import threading
 import uvicorn
 
+import pyarrow as pa
 import vertica_python as vp
 
 from global_state import finish
