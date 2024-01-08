@@ -59,5 +59,5 @@ async def handler(request: Request) -> Response:
             files[full_path] += len(ret)
             results.append(b)
             return Response()
-
-app = Starlette(debug=True, routes=[Route("/{full_path:path}", handler)])
+    raise Exception(f"Unhandled operation {operation} at path {full_path} and method {request.method}")
+app = Starlette(debug=True, routes=[Route("/{full_path:path}", handler, methods=["GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH"])])
