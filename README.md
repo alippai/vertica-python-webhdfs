@@ -1,6 +1,11 @@
+The idea is based on the [https://github.com/vertica/spark-connector](https://github.com/vertica/spark-connector) library.  
+
+While this already can give you a huge speedup (depending on the number of nodes and query speed), using a similar solution with supporting Apache Arrow format would be a much better solution.
+Obviously using it's advanced features like REE and dictionary (as Vertica may have compatible internal concepts) would make the implementation the fastest and most ergonomic.
+
 How it works:
 
-1. Start a fake webhdfs server in the same thread using FastAPI
+1. Start a fake webhdfs server in the same thread using Starlette
 2. Issue `EXPORT TO PARQUET(directory='hdfs://fake_webhdfs:8000/somedata') AS SELECT ...`
 3. Collect the parquet binary files in the webserver in-memory
 4. Convert the collect parquet tables into pyarrow tables
@@ -36,3 +41,5 @@ actually it needs to keep both the compressed and uncompressed versions in the m
        |                                     |
        |<----- EXPORT TO PARQET returns -----|
 ```
+
+Inefficiencies discovered:
