@@ -4,9 +4,10 @@ import threading
 import uvicorn
 
 import pyarrow as pa
+import pyarrow.parquet as pq
 import vertica_python as vp
 
-from global_state import finish
+from fake_webhdfs import app
 
 class Server(uvicorn.Server):
     def install_signal_handlers(self):
@@ -24,7 +25,7 @@ class Server(uvicorn.Server):
             self.should_exit = True
             thread.join()
 
-config = uvicorn.Config("fake_webhdfs:app", host="127.0.0.1", port=8000, log_level="trace")
+config = uvicorn.Config(app, host="127.0.0.1", log_level="trace")
 server = Server(config=config)
 
 def test_read_main():
@@ -34,10 +35,10 @@ def test_read_main():
     
     with server.run_in_thread():
         connection.cursor().execute(
-            "EXPORT TO PARQUET(directory = 'hdfs://127.0.0.1:8000/virtualdata') AS SELECT 1 AS account_id"
+            f"EXPORT TO PARQUET(directory = 'hdfs://127.0.0.1:{server.servers[0].sockets[0].getsockname()[1]}/virtualdata') AS SELECT 1 AS account_id"
         ).fetchall()
     
     # a single pyarrow table
-    t = finish()
+    t = pa.concat_tables([pq.read_table(r) for r in app.state.results])
     print(t)
     assert t.equals(pa.Table.from_arrays([pa.array([1])], names=['account_id']))

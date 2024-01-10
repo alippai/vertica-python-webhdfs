@@ -11,12 +11,11 @@ How it works:
 4. Convert the collect parquet tables into pyarrow tables
 
 Limitations:
-1. It can be used on a single thread only right now
-2. It's pure python, receiving IO performance may not be optimal
-3. Using Parquet vs Arrow still has some overhead
-4. Vertica has to connect to the python script, for this it needs IP or hostname
-5. It's not encrypted
-6. Resultset needs to fit into memory, no streaming yet  
+1. It's pure python, receiving IO performance may not be optimal
+2. Using Parquet vs Arrow still has some overhead
+3. Vertica has to connect to the python script, for this it needs IP or hostname
+4. It's not encrypted
+5. Resultset needs to fit into memory, no streaming yet  
 actually it needs to keep both the compressed and uncompressed versions in the memory for a moment
 
 ```
